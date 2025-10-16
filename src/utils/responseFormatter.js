@@ -66,3 +66,4 @@ module.exports = {
   formatErrorResponse,
   formatPaginatedResponse
 };
+

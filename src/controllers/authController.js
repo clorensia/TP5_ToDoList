@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/Users');
 const logger = require('../utils/logger');
 const { formatSuccessResponse, formatErrorResponse } = require('../utils/responseFormatter');
 const { validateRegister, validateLogin } = require('../validators/authValidator');
