@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "src/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/server.js"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "@MONGODB_URI",
+    "JWT_SECRET": "@JWT_SECRET",
+    "NODE_ENV": "production",
+    "CORS_ORIGIN": "@CORS_ORIGIN"
+  }
+}

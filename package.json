@@ -1,4 +1,23 @@
 {
+  "name": "todolist-backend",
+  "version": "1.0.0",
+  "description": "ToDoList RESTful API dengan Express.js dan MongoDB",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "keywords": [
+    "todolist",
+    "api",
+    "rest",
+    "express",
+    "mongodb",
+    "jwt"
+  ],
+  "author": "Candra Lorensia",
+  "license": "MIT",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
@@ -11,5 +30,9 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
