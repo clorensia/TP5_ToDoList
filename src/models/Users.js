@@ -5,28 +5,29 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: [true, 'Username is required'],
+      required: [true, 'Username adalah field yang wajib diisi'],
       unique: true,
       trim: true,
-      minlength: [3, 'Username must be at least 3 characters'],
-      maxlength: [30, 'Username cannot exceed 30 characters']
+      minlength: [3, 'Username minimal 3 karakter'],
+      maxlength: [30, 'Username maksimal 30 karakter'],
+      lowercase: false
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: [true, 'Email adalah field yang wajib diisi'],
       unique: true,
       lowercase: true,
       trim: true,
       match: [
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-        'Please provide a valid email address'
+        'Masukkan email yang valid'
       ]
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: [6, 'Password must be at least 6 characters'],
-      select: false
+      required: [true, 'Password adalah field yang wajib diisi'],
+      minlength: [6, 'Password minimal 6 karakter'],
+      select: false // Don't return password by default
     }
   },
   {
@@ -35,32 +36,38 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Index for performance optimization
+// Index untuk optimasi query
 userSchema.index({ email: 1 });
 userSchema.index({ username: 1 });
 
-// Pre-save hook: Hash password before saving
+// Pre-save hook: Hash password sebelum disimpan
 userSchema.pre('save', async function(next) {
+  // Hanya hash jika password berubah
   if (!this.isModified('password')) return next();
-  
+
   try {
-    this.password = await bcrypt.hash(this.password, 10);
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 });
 
 // Instance method: Compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
 };
 
-// Instance method: Generate public profile (exclude sensitive data)
+// Instance method: Return public user data
 userSchema.methods.toJSON = function() {
-  const obj = this.toObject();
-  delete obj.password;
-  return obj;
+  const user = this.toObject();
+  delete user.password;
+  return user;
 };
 
 module.exports = mongoose.model('User', userSchema);
