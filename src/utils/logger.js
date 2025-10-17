@@ -19,8 +19,8 @@ const formatLog = (level, message, data = null) => {
 const writeLog = (level, message, data) => {
   const logMessage = formatLog(level, message, data);
 
-  // Only write to file in development
-  if (process.env.NODE_ENV !== 'production') {
+  // Only write to file in development AND not in Vercel
+  if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
     try {
       const logsDir = path.join(__dirname, '../../logs');
       if (!fs.existsSync(logsDir)) {
@@ -33,11 +33,11 @@ const writeLog = (level, message, data) => {
       fs.appendFileSync(logFile, logMessage + '\n');
       fs.appendFileSync(allLogsFile, logMessage + '\n');
     } catch (err) {
-      console.error('Failed to write log file:', err.message);
+      // Silently fail in serverless environment
     }
   }
 
-  // Always log to console
+  // Always log to console (Vercel will capture this)
   const colors = {
     info: '\x1b[36m',
     warn: '\x1b[33m',
