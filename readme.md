@@ -6,7 +6,7 @@ Aplikasi ToDoList RESTful API yang dibangun dengan Express.js dan MongoDB. API i
 
 **Akses API:** https://todo-backend-git-main-clorensias-projects.vercel.app/
 
-**Postman Collection:** https://documenter.getpostman.com/view/49308345/2sB3QNr9Kn
+**Postman Collection:** https://documenter.getpostman.com/view/49308345/2sB3QQH73N
 
 ---
 
