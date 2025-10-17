@@ -20,11 +20,28 @@ const app = express();
 app.use(helmet());
 
 // CORS: Configure cross-origin requests
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*',
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://todo-frontend.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:5173'
+    ];
+    
+    // Allow requests with no origin (mobile apps, Postman, etc)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200
-}));
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 
 // Rate Limiting: Prevent brute force attacks
 const limiter = rateLimit({
@@ -59,7 +76,11 @@ app.use((req, res, next) => {
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   const response = formatSuccessResponse(
-    { timestamp: new Date().toISOString() },
+    { 
+      timestamp: new Date().toISOString(),
+      status: 'healthy',
+      uptime: process.uptime()
+    },
     'Server is running'
   );
   res.status(200).json(response);

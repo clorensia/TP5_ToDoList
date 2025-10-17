@@ -33,15 +33,7 @@ const todoSchema = new mongoose.Schema(
     },
     dueDate: {
       type: Date,
-      validate: {
-        validator: function(value) {
-          if (this.isNew && value) {
-            return value >= new Date().setHours(0, 0, 0, 0);
-          }
-          return true;
-        },
-        message: 'Due date tidak boleh di masa lalu'
-      }
+      default: null
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -63,13 +55,27 @@ todoSchema.index({ createdBy: 1, createdAt: -1 });
 todoSchema.index({ createdBy: 1, dueDate: 1 });
 
 // Virtual: Check if todo is overdue
+// Menggunakan getter function yang proper
 todoSchema.virtual('isOverdue').get(function() {
-  if (!this.dueDate || this.status === TODO_STATUS.COMPLETED) return false;
+  if (!this.dueDate || this.status === TODO_STATUS.COMPLETED) {
+    return false;
+  }
   return new Date() > this.dueDate;
 });
 
 // Enable virtuals in JSON output
-todoSchema.set('toJSON', { virtuals: true });
+todoSchema.set('toJSON', { 
+  virtuals: true,
+  transform: function(doc, ret) {
+    // Remove _id dari output, pakai id saja
+    ret.id = ret._id;
+    delete ret._id;
+    return ret;
+  }
+});
+
 todoSchema.set('toObject', { virtuals: true });
 
-module.exports = mongoose.model('Todo', todoSchema);
+const Todo = mongoose.model('Todo', todoSchema);
+
+module.exports = Todo;

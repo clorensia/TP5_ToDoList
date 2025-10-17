@@ -23,8 +23,12 @@ const validateCreateTodo = (data) => {
     errors.push(ERROR_MESSAGES.INVALID_PRIORITY);
   }
 
-  if (dueDate && !isValidDueDate(dueDate)) {
-    errors.push(ERROR_MESSAGES.DUE_DATE_PAST);
+  if (dueDate) {
+    if (!isValidDate(dueDate)) {
+      errors.push('Format tanggal tidak valid');
+    } else if (!isValidDueDate(dueDate)) {
+      errors.push(ERROR_MESSAGES.DUE_DATE_PAST);
+    }
   }
 
   return {
@@ -42,10 +46,12 @@ const validateUpdateTodo = (data) => {
   const errors = [];
   const { title, description, status, priority, dueDate } = data;
 
-  if (title !== undefined && title.trim() === '') {
-    errors.push('Title tidak boleh kosong');
-  } else if (title && title.length > 200) {
-    errors.push('Title tidak boleh lebih dari 200 karakter');
+  if (title !== undefined) {
+    if (title.trim() === '') {
+      errors.push('Title tidak boleh kosong');
+    } else if (title.length > 200) {
+      errors.push('Title tidak boleh lebih dari 200 karakter');
+    }
   }
 
   if (description !== undefined && description.length > 1000) {
@@ -60,8 +66,15 @@ const validateUpdateTodo = (data) => {
     errors.push(ERROR_MESSAGES.INVALID_PRIORITY);
   }
 
-  if (dueDate && !isValidDueDate(dueDate)) {
-    errors.push(ERROR_MESSAGES.DUE_DATE_PAST);
+  if (dueDate !== undefined && dueDate !== null) {
+    if (!isValidDate(dueDate)) {
+      errors.push('Format tanggal tidak valid');
+    }
+    // Allow clearing dueDate by passing null or empty string
+    // Only validate if it's a valid date
+    else if (dueDate && !isValidDueDate(dueDate)) {
+      errors.push(ERROR_MESSAGES.DUE_DATE_PAST);
+    }
   }
 
   return {
@@ -89,7 +102,17 @@ const isValidPriority = (priority) => {
 };
 
 /**
- * Validate due date
+ * Validate if string is a valid date
+ * @param {String} dateString - Date string to validate
+ * @returns {Boolean} Is valid date format
+ */
+const isValidDate = (dateString) => {
+  const date = new Date(dateString);
+  return date instanceof Date && !isNaN(date);
+};
+
+/**
+ * Validate due date is not in the past
  * @param {String} dueDate - Date to validate
  * @returns {Boolean} Date is valid and not in the past
  */

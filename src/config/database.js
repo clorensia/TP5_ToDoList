@@ -3,10 +3,8 @@ const logger = require('../utils/logger');
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    // Remove deprecated options
+    const conn = await mongoose.connect(process.env.MONGODB_URI);
 
     logger.info(`MongoDB Connected: ${conn.connection.host}`);
     return conn;
@@ -23,6 +21,10 @@ mongoose.connection.on('disconnected', () => {
 
 mongoose.connection.on('reconnected', () => {
   logger.info('MongoDB Reconnected');
+});
+
+mongoose.connection.on('error', (err) => {
+  logger.error(`MongoDB Error: ${err.message}`);
 });
 
 process.on('SIGINT', async () => {
